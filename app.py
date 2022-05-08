@@ -14,6 +14,18 @@ import datetime as dt
 import seaborn as sns
 from indicateurs_techniques.indicateur_tech import AddIndicators
 from libs.graph import graph_gauche,graph_droit
+import pandas_datareader as pdr
+from pypfopt.discrete_allocation import DiscreteAllocation, get_latest_prices
+from pypfopt import EfficientFrontier
+from pypfopt import risk_models
+from pypfopt import expected_returns
+from pypfopt import plotting
+import copy
+import plotly.express as px
+import seaborn as sns
+import datetime
+from io import BytesIO
+from portefeuille.plot import plot_cum_returns, plot_efficient_frontier_and_max_sharpe
 # emojis: https://www.webfx.com/tools/emoji-cheat-sheet/
 st.set_page_config(page_title="Dashboard", page_icon=":bar_chart:", layout="wide")
 
@@ -44,44 +56,75 @@ def get_data_default():
         all_data[f'{key}'] = data.history(period='max')
     return all_data
 
-@st.cache
-def get_data():
-    df = pd.read_excel(
-        io="supermarkt_sales.xlsx",
-        engine="openpyxl",
-        sheet_name="Sales",
-        skiprows=3,
-        usecols="B:R",
-        nrows=1000,
-    )
-    # Add 'hour' column to dataframe
-    df["hour"] = pd.to_datetime(df["Time"], format="%H:%M:%S").dt.hour
-    return df
-
 # GET  ALL DATA
-df = get_data()
 data_default = get_data_default()
-
-# ---- SIDEBAR ----
-st.sidebar.header("Please Filter Here:")
-name_actif = st.sidebar.text_input("Entrez le nom de votre actif, ex:APPLE  ?")
-if name_actif:
-    st.write("Donnée Financieres de votre Actif ")
-    data = get_data_finance(name_actif)
-    data = data.sort_values("Date", ascending = False)
-    data_filter = data.filter(['Close'])
-    last_60_days = data[-60:].values
-
-    st.write(data)
-    chart_data = data[['Open','Close','High']].tail(200)
-    st.line_chart(chart_data)
-#st.sidebar.selectbox('Choississez une entreprise', ['AAPL','MSFT'])
 
 # ---- MAINPAGE ----
 st.title(":bar_chart: Dashboard")
+st.header("Michelle and Francis Stock Portfolio Optimizer")
 st.markdown("##")
 
-############################################################ Header Dashboard ##################################################
+
+tickers_string = st.sidebar.text_input('Entrer les symbols de vos stocks, separer par la virgule, ex. AAPL,MA,FB,MSFT,AMZN,JPM,BA', '').upper()
+
+#print(tickers)
+if tickers_string:
+    start = datetime.datetime(2018,5,31)
+    end = datetime.datetime(2022,5,5)
+    tickers = tickers_string.split(',')
+    stocks_df = pdr.DataReader(tickers, 'yahoo', start, end)['Adj Close']	
+    print(stocks_df)
+    # Plot Individual Stock Prices
+    fig_price = px.line(stocks_df, title='Prix ​​des actions individuelles')
+    # Plot Individual Cumulative Returns
+    fig_cum_returns = plot_cum_returns(stocks_df, 'Rendements cumulatifs des actions individuelles à partir de 100 $')
+    # Calculatge and Plot Correlation Matrix between Stocks
+    corr_df = stocks_df.corr().round(2)
+    fig_corr = px.imshow(corr_df,title = 'Correlation entre les actifs')
+
+    # Calculate expected returns and sample covariance matrix for portfolio optimization later
+    mu = expected_returns.mean_historical_return(stocks_df)
+    S = risk_models.sample_cov(stocks_df)
+
+    # Plot efficient frontier curve
+    fig = plot_efficient_frontier_and_max_sharpe(mu, S)
+    fig_efficient_frontier = BytesIO()
+    fig.savefig(fig_efficient_frontier, format="png")
+
+    # Get optimized weights
+    ef = EfficientFrontier(mu, S)
+    ef.max_sharpe(risk_free_rate=0.02)
+    weights = ef.clean_weights()
+    expected_annual_return, annual_volatility, sharpe_ratio = ef.portfolio_performance()
+    weights_df = pd.DataFrame.from_dict(weights, orient = 'index')
+    weights_df.columns = ['weights']
+    # Calculate returns of portfolio with optimized weights
+    stocks_df['Optimized Portfolio'] = 0
+    for ticker, weight in weights.items():
+        stocks_df['Optimized Portfolio'] += stocks_df[ticker]*weight
+
+    # Plot Cumulative Returns of Optimized Portfolio
+    fig_cum_returns_optimized = plot_cum_returns(stocks_df['Optimized Portfolio'], 'Rendements cumulatifs du portefeuille optimisé à partir de 100 $')
+    # Display everything on Streamlit
+    st.subheader("Votre portefeuille se compose de {} actifs".format(tickers_string))	
+    st.plotly_chart(fig_cum_returns_optimized)
+
+    st.subheader("Pondérations optimisées du portefeuille Max Sharpe")
+    st.dataframe(weights_df)
+
+    st.subheader("Performance optimisée du portefeuille Max Sharpe")
+    st.image(fig_efficient_frontier)
+
+    st.subheader('Rendement annuel attendu: {}%'.format((expected_annual_return*100).round(2)))
+    st.subheader('Volatilité annuelle: {}%'.format((annual_volatility*100).round(2)))
+    st.subheader('Ratio de Sharpe: {}'.format(sharpe_ratio.round(2)))
+
+    st.plotly_chart(fig_corr) # fig_corr is not a plotly chart
+    st.plotly_chart(fig_price)
+    st.plotly_chart(fig_cum_returns)
+
+
+############################################################ Header Dashboard Pour carrefour##################################################
 left_column, middle_column, right_column = st.columns(3)
 with left_column:
     st.subheader("Prix moyen par Transaction:")
@@ -169,7 +212,7 @@ left_column.plotly_chart(fig_Microsoft, use_container_width=True)
 right_column.plotly_chart(fig_Microsoft_data, use_container_width=True)
 # DATAFRAME CARREFOUR
 if st.checkbox('Voir les données financieres Microsoft'):
-    st.write(Microsoft)
+    st.write(Microsoft.head(100))
 st.markdown("""---""")
 # INDICATEUR TECHNIQUE
 st.sidebar.text("INDICATEUR TECHNIQUE POUR MICROSOFT")

@@ -5,3 +5,5 @@ openpyxl==3.0.6
 yfinance==0.1.70
 numpy==1.18.4
 ta==0.7.0
+PyPortfolioOpt==1.5.2
+pandas_datareader==0.10.0
