@@ -1,9 +1,8 @@
 # PROJET PYTHON ESG FINANCE
 
-**Kézako?**: 
 Vous travaillez dans une entreprise financière qui vous demande de faire un tableau de bord de suivi d'actif en python
  
-**Objectif**: Le but est de permettre de visualiser de manière interactif un ou plusieurs actifs de votre choix (actions, devises, etc.):
+**Objectif**: Le but est de permettre de visualiser de manière interactif un ou plusieurs actifs de votre choix (actions, devises, etc.)
 
 ![architectuere](./img/dashboard.PNG)
 
