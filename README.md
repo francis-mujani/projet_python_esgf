@@ -19,7 +19,7 @@ Pour cela vous devrez :
 5. Vous devrez également calculer des métriques financières classiques sur ces cours.
  
 # Solutions
-1. collecter des données : Utilisation de l'API YAHOO FINANCE
+### 1. collecter des données : Utilisation de l'API YAHOO FINANCE
 ```python
  import yfiance as yf
 
@@ -27,7 +27,7 @@ Pour cela vous devrez :
 data = yf.Ticker('MSFT')
 Microsoft = data.history(period='max')
 ```
-2. les charger dans le tableau de bord : Utilisation de Streamlit
+### 2. les charger dans le tableau de bord : Utilisation de Streamlit
 ```bash
 pip install streamlit
 ```
@@ -40,6 +40,28 @@ data = yf.Ticker('MSFT')
 Microsoft = data.history(period='max')
 st.write(Microsoft)
 ```
+### 3. permettre un affichage des données interactifs.
+```python
+ import streamlit as st
+```
+
+### 4. collecter des données : Utilisation de l'API YAHOO FINANCE
+```python
+ import yfiance as yf
+```
+- Récuperation des données financières en temps reel
+
+### 5. LES METRIQUES
+
+- Prix Individuel du portefeuille
+![architectuere](./img/rendement.PNG)
+
+- Performance Optimisée du Portefeuille avec le Ratio Sharpe plus Correlation entre les actifs
+![architectuere](./img/perfomance.PNG)
+
+-  Evolution du prix des actifs
+![architectuere](./img/prix_individuel.PNG)
+
 # Lancement du projet 
 Pour lancer le projet, Veuillez lancer la commande ci-dessous dans le terminal
 ```bash
@@ -52,5 +74,4 @@ Rendez vous dans votre localhost:8501, server par default de Streamlit
 
 ```bash
 http://localhost:8501/
-payload:
 ```
