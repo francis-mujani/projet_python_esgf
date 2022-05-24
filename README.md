@@ -22,6 +22,7 @@ Pour cela vous devrez :
 ### 1. collecter des données : Utilisation de l'API YAHOO FINANCE
 ```python
  import yfiance as yf
+ from pandas_datareader.data import DataReader
 
 # Exemple de récuperation des données financieres de Microsoft
 data = yf.Ticker('MSFT')
