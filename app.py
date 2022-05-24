@@ -66,7 +66,6 @@ st.markdown("##")
 
 
 tickers_string = st.sidebar.text_input('Entrer les symbols de vos stocks, separer par la virgule, ex. AAPL,MA,FB,MSFT,AMZN,JPM,BA', '').upper()
-
 #print(tickers)
 if tickers_string:
     start = datetime.datetime(2018,5,31)
@@ -122,7 +121,8 @@ if tickers_string:
     st.plotly_chart(fig_corr) # fig_corr is not a plotly chart
     st.plotly_chart(fig_price)
     st.plotly_chart(fig_cum_returns)
-
+st.markdown("""---""")
+st.markdown("""---""")
 
 ############################################################ Header Dashboard Pour carrefour##################################################
 left_column, middle_column, right_column = st.columns(3)
