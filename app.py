@@ -3,9 +3,11 @@
 # @Email:  mnkou@outlook.fr
 # @Project:  Projet: tableau de bord de suivi d'actif en python w/ Streamlit
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
+import copy
+import pandas as pd
 from matplotlib.pyplot import axis
 import matplotlib.pyplot as plt
-import pandas as pd
+import datetime
 import plotly.express as px 
 import streamlit as st
 import yfinance as yf
@@ -20,10 +22,8 @@ from pypfopt import EfficientFrontier
 from pypfopt import risk_models
 from pypfopt import expected_returns
 from pypfopt import plotting
-import copy
 import plotly.express as px
 import seaborn as sns
-import datetime
 from io import BytesIO
 from portefeuille.plot import plot_cum_returns, plot_efficient_frontier_and_max_sharpe
 # emojis: https://www.webfx.com/tools/emoji-cheat-sheet/
@@ -52,7 +52,6 @@ def get_data_default():
     }
     for i, (key, value) in enumerate(dictionaire.items()): # METTRE ENUMERATE PS : regarde stackover flow
         data = yf.Ticker(value)
-        print(key)
         all_data[f'{key}'] = data.history(period='max')
     return all_data
 
@@ -72,7 +71,6 @@ if tickers_string:
     end = datetime.datetime(2022,5,5)
     tickers = tickers_string.split(',')
     stocks_df = pdr.DataReader(tickers, 'yahoo', start, end)['Adj Close']	
-    print(stocks_df)
     # Plot Individual Stock Prices
     fig_price = px.line(stocks_df, title='Prix ​​des actions individuelles')
     # Plot Individual Cumulative Returns
@@ -124,7 +122,7 @@ if tickers_string:
 st.markdown("""---""")
 st.markdown("""---""")
 
-############################################################ Header Dashboard Pour carrefour##################################################
+############################################################ Header Dashboard for carrefour##################################################
 left_column, middle_column, right_column = st.columns(3)
 with left_column:
     st.subheader("Prix moyen par Transaction:")
