@@ -53,15 +53,21 @@ st.write(Microsoft)
 
 ### 5. LES METRIQUES
 
-- Prix Individuel du portefeuille
+## - Prix Individuel du portefeuille
 ![architectuere](./img/rendement.PNG)
-
-- Performance Optimisée du Portefeuille avec le Ratio Sharpe plus Correlation entre les actifs
+```python
+.
+```
+## - Performance Optimisée du Portefeuille avec le Ratio Sharpe plus Correlation entre les actifs
 ![architectuere](./img/perfomance.PNG)
-
--  Evolution du prix des actifs
+```python
+.
+```
+## -  Evolution du prix des actifs
 ![architectuere](./img/prix_individuel.PNG)
-
+```python
+.
+```
 # Lancement du projet 
 Pour lancer le projet, Veuillez lancer la commande ci-dessous dans le terminal
 ```bash
